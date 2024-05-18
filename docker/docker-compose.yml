@@ -1,0 +1,21 @@
+version: '3'
+services:
+  a_stock:
+    image: hyeongjin0319/stock-trade:latest
+    container_name: a_stock
+    hostname: a_stock
+    ports:
+      - 8080:8080
+    environment:
+      - ENV_VARIABLE=value
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    hostname: redis
+    ports:
+      - ${REDIS_PORT}:6379
+    environment:
+      - MYSQL_ROOT_PASSWORD=your_password
+      - MYSQL_DATABASE=your_database
