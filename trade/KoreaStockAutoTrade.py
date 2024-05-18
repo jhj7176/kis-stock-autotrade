@@ -3,12 +3,11 @@ import requests
 import json
 import datetime
 import time
-from common.config import get_config
+from common.config import *
 from common.logging import logger, send_message
 from common.kis import get_access_token, hashkey, KoreaKis
 
-config = get_config()
-SYMBOL_LIST = config['SYMBOL_LIST']
+# SYMBOL_LIST = config['SYMBOL_LIST']
 
 kor_kis = KoreaKis()
 

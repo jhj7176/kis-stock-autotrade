@@ -33,7 +33,7 @@ def logger(message, level=logging.DEBUG, _self=None):
         # Update the message with the class name and method name
         message = f"{class_name}.{method_name} -- {message}"
         
-    print("logger() "+message)
+    # print("logger() "+message)
     logging.log(level, message)
     remove_old_log_files()
 
