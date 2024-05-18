@@ -21,7 +21,7 @@ def get_access_token():
     PATH = "oauth2/tokenP"
     URL = f"{KIS_API_BASE}/{PATH}"
     res = requests.post(URL, headers=headers, data=json.dumps(body))
-    logger("get_access_token -- " + res.json(), logging.DEBUG)
+    logger("get_access_token -- " + res.text, logging.DEBUG)
     token = res.json()["access_token"]
     expires_in = res.json()["expires_in"]
     set_cache('ACCESS_TOKEN', token, ex=expires_in) # Redis에 토큰 저장
@@ -39,7 +39,7 @@ def hashkey(datas):
     'appSecret' : KIS_APP_SECRET,
     }
     res = requests.post(URL, headers=headers, data=json.dumps(datas))
-    logger("hashkey -- "+res.json(), logging.DEBUG)
+    logger("hashkey -- "+res.text, logging.DEBUG)
     hashkey = res.json()["HASH"]
     logger("hashkey -- end", logging.DEBUG)
     return hashkey
@@ -65,7 +65,7 @@ class KoreaKis:
         "fid_input_iscd":code,
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         logger("end", logging.DEBUG, _self)
         return int(res.json()['output']['stck_prpr'])
 
@@ -86,7 +86,7 @@ class KoreaKis:
         "fid_period_div_code":"D"
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         stck_oprc = int(res.json()['output'][0]['stck_oprc']) #오늘 시가
         stck_hgpr = int(res.json()['output'][1]['stck_hgpr']) #전일 고가
         stck_lwpr = int(res.json()['output'][1]['stck_lwpr']) #전일 저가
@@ -120,7 +120,7 @@ class KoreaKis:
             "CTX_AREA_NK100": ""
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         stock_list = res.json()['output1']
         evaluation = res.json()['output2']
         stock_dict = {}
@@ -190,7 +190,7 @@ class KoreaKis:
             "hashkey" : hashkey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         if res.json()['rt_cd'] == '0':
             send_message(f"[Purchase successful]{str(res.json())}")
             logger("end", logging.DEBUG, _self)
@@ -222,7 +222,7 @@ class KoreaKis:
             "hashkey" : hashkey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         if res.json()['rt_cd'] == '0':
             send_message(f"[Purchase Successful]{str(res.json())}")
             logger("end", logging.DEBUG, _self)
@@ -282,7 +282,6 @@ class UsaKis:
     def get_stock_balance(_self):
         """주식 잔고조회"""
         logger("start", logging.INFO, _self)
-        print("start")
         PATH = "uapi/overseas-stock/v1/trading/inquire-balance"
         URL = f"{KIS_API_BASE}/{PATH}"
         headers = {"Content-Type":"application/json", 
@@ -301,7 +300,7 @@ class UsaKis:
             "CTX_AREA_NK200": ""
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         stock_list = res.json()['output1']
         evaluation = res.json()['output2']
         stock_dict = {}
@@ -331,7 +330,7 @@ class UsaKis:
             "tr_id":"TTTC8908R",
             "custtype":"P",
         }
-        print(headers)
+        # print(headers)
         params = {
             "CANO": CANO,
             "ACNT_PRDT_CD": ACNT_PRDT_CD,
@@ -342,7 +341,7 @@ class UsaKis:
             "OVRS_ICLD_YN": "Y"
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger((res.json()), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         cash = res.json()['output']['ord_psbl_cash']
         send_message(f"Available cash balance for orders: {cash}원")
         logger("end", logging.DEBUG, _self)
@@ -372,7 +371,7 @@ class UsaKis:
             "hashkey" : hashkey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         if res.json()['rt_cd'] == '0':
             send_message(f"[Purchase successful]{str(res.json())}")
             logger("end", logging.DEBUG, _self)
@@ -406,13 +405,13 @@ class UsaKis:
             "hashkey" : hashkey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         if res.json()['rt_cd'] == '0':
-            send_message(f"[매도 성공]{str(res.json())}")
+            send_message(f"[Purchase successful]{str(res.json())}")
             logger("end", logging.DEBUG, _self)
             return True
         else:
-            send_message(f"[매도 실패]{str(res.json())}")
+            send_message(f"[Purchase failed]{str(res.json())}")
             logger("end", logging.DEBUG, _self)
             return False
 
@@ -436,7 +435,7 @@ class UsaKis:
             "INQR_DVSN_CD": "00"
         }
         res = requests.get(URL, headers=headers, params=params)
-        logger(res.json(), logging.DEBUG, _self)
+        logger(res.text, logging.DEBUG, _self)
         exchange_rate = 1270.0
         if len(res.json()['output2']) > 0:
             exchange_rate = float(res.json()['output2'][0]['frst_bltn_exrt'])

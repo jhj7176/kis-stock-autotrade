@@ -6,16 +6,32 @@ services:
     hostname: a_stock
     ports:
       - 8080:8080
+    restart: always
     environment:
-      - ENV_VARIABLE=value
+      KIS_APP_KEY: ${KIS_APP_KEY}
+      KIS_APP_SECRET: ${KIS_APP_SECRET}
+      CANO: ${CANO}
+      ACNT_PRDT_CD: ${ACNT_PRDT_CD}
+      KIS_API_BASE: ${KIS_API_BASE}
+      SYMBOL_LIST: ${SYMBOL_LIST}
+      NASD_SYMBOL_LIST: ${NASD_SYMBOL_LIST}
+      NYSE_SYMBOL_LIST: ${NYSE_SYMBOL_LIST}
+      AMEX_SYMBOL_LIST: ${AMEX_SYMBOL_LIST}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      LOG_DATE: ${LOG_DATE}
+      BASIC_LOG_LEVEL: ${BASIC_LOG_LEVEL}
+      NATION: ${NATION}
+      STDOUT_LOGGER_USE_YN: ${STDOUT_LOGGER_USE_YN}
     depends_on:
       - redis
 
-  redis:
+  redis: # container name
+    container_name: redis
     image: redis:latest
-    hostname: redis
-    ports:
-      - ${REDIS_PORT}:6379
-    environment:
-      - MYSQL_ROOT_PASSWORD=your_password
-      - MYSQL_DATABASE=your_database
+    hostname: a_stock_redis
+    ports: # 바인딩할 포트:내부 포트
+      - ${REDIS_BINDING_PORT}:${REDIS_PORT}
+    command: redis-server --port ${REDIS_PORT}
+    restart: always
